@@ -61,26 +61,64 @@ impl<T> FastVec<T> {
 
     // Use the project handout as a guide for this part!
     pub fn get(&self, i: usize) -> &T {
-        todo!("implement get!");
+        if i >= self.len {
+            panic!("FastVec: get out of bounds");
+        }
+        unsafe {
+            &*self.ptr_to_data.add(i)
+        }
     }
 
     pub fn push(&mut self, t: T) {
         if self.len == self.capacity {
-            todo!("implement growing the vector by doubling the size!");
-        } else {
-            todo!("implement pushing t directly since the vector still has capacity!");
+            // double the capacity
+            let new_capacity = self.capacity * 2;
+            let new_ptr = unsafe { MALLOC.malloc(size_of::<T>() * new_capacity) as *mut T };
+            // move all elements to new memory
+            for i in 0..self.len {
+                unsafe {
+                    let element = ptr::read(self.ptr_to_data.add(i));
+                    ptr::write(new_ptr.add(i), element);
+                }
+            }
+            // free old memory and update pointer
+            unsafe { MALLOC.free(self.ptr_to_data as *mut u8); }
+            self.ptr_to_data = new_ptr;
+            self.capacity = new_capacity;
         }
+        // write the new element at the end
+        unsafe {
+            ptr::write(self.ptr_to_data.add(self.len), t);
+        }
+        self.len += 1;
     }
 
     pub fn remove(&mut self, i: usize) {
-        todo!("implement remove");
+        if i >= self.len {
+            panic!("FastVec: remove out of bounds");
+        }
+        unsafe {
+            // drop the element at i
+            ptr::read(self.ptr_to_data.add(i));
+            // shift everything after i one step back
+            for j in (i+1)..self.len {
+                let element = ptr::read(self.ptr_to_data.add(j));
+                ptr::write(self.ptr_to_data.add(j-1), element);
+            }
+        }
+        self.len -= 1;
     }
 
     // This appears correct but with further testing, you will notice it has a bug!
     // Hint: check out case 2 in memory.rs, which you can run using
     //       cargo run --bin memory
     pub fn clear(&mut self) {
-        unsafe { MALLOC.free(self.ptr_to_data as *mut u8); }
+        unsafe {
+            for i in 0..self.len {
+                ptr::read(self.ptr_to_data.add(i));
+            }
+            MALLOC.free(self.ptr_to_data as *mut u8);
+        }
         self.ptr_to_data = null_mut();
         self.len = 0;
         self.capacity = 0;
