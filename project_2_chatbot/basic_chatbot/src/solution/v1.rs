@@ -25,10 +25,6 @@ impl ChatbotV1 {
         let asynchronous_output = chat_session.add_message(message);
         let output = asynchronous_output.await.unwrap();
 
-        //response_stream.to_std_out().await.unwrap();
-
-
-        //return String::from("Hello, I am not a bot (yet)!");
         return output;
     }
 }
