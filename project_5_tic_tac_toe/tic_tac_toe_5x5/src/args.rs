@@ -48,5 +48,7 @@ pub enum Agents {
     Random,
     Test,
     Solution,
+    Basic,
     Manual,
 }
+

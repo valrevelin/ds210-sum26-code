@@ -5,6 +5,7 @@ use tic_tac_toe_stencil::player::Player;
 
 use crate::args::{Agents, Args};
 use tic_tac_toe_5x5::solution::agent::SolutionAgent;
+use tic_tac_toe_5x5::solution::basic_agent::BasicAgent;
 
 mod args;
 
@@ -50,5 +51,18 @@ fn main() {
         (Agents::Test, Agents::Random) => game_loop::<_, TestAgent, RandomAgent>(layout, TIME_LIMIT, false),
         (Agents::Test, Agents::Solution) => game_loop::<_, TestAgent, SolutionAgent>(layout, TIME_LIMIT, false),
         (Agents::Test, Agents::Test) => game_loop::<_, TestAgent, TestAgent>(layout, TIME_LIMIT, false),
+        // Basic vs the world.
+        (Agents::Basic, Agents::First) => game_loop::<_, BasicAgent, FirstMoveAgent>(layout, TIME_LIMIT, false),
+        (Agents::Basic, Agents::Manual) => game_loop::<_, BasicAgent, ManualAgent>(layout, TIME_LIMIT, false),
+        (Agents::Basic, Agents::Random) => game_loop::<_, BasicAgent, RandomAgent>(layout, TIME_LIMIT, false),
+        (Agents::Basic, Agents::Solution) => game_loop::<_, BasicAgent, SolutionAgent>(layout, TIME_LIMIT, false),
+        (Agents::Basic, Agents::Test) => game_loop::<_, BasicAgent, TestAgent>(layout, TIME_LIMIT, false),
+        (Agents::Basic, Agents::Basic) => game_loop::<_, BasicAgent, BasicAgent>(layout, TIME_LIMIT, false),
+        // Basic as O
+        (Agents::First, Agents::Basic) => game_loop::<_, FirstMoveAgent, BasicAgent>(layout, TIME_LIMIT, false),
+        (Agents::Manual, Agents::Basic) => game_loop::<_, ManualAgent, BasicAgent>(layout, TIME_LIMIT, false),
+        (Agents::Random, Agents::Basic) => game_loop::<_, RandomAgent, BasicAgent>(layout, TIME_LIMIT, false),
+        (Agents::Solution, Agents::Basic) => game_loop::<_, SolutionAgent, BasicAgent>(layout, TIME_LIMIT, false),
+        (Agents::Test, Agents::Basic) => game_loop::<_, TestAgent, BasicAgent>(layout, TIME_LIMIT, false),
     };
 }
